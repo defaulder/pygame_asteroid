@@ -18,5 +18,5 @@ class CircleShape(pygame.sprite.Sprite):
 		pass
 
 	def update(self, dt):
-		$ sub-classes must override
+		#  sub-classes must override
 		pass
