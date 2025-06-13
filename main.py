@@ -3,9 +3,11 @@
 # throughout this file
 import pygame
 import sys
+
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from score import Score
 from shot import Shot
 from constants import *
 
@@ -26,6 +28,7 @@ def main():
 	Shot.containers = (updatable, drawable, shots)
 
 	field = AsteroidField()
+	score = Score(drawable)
 	player = Player(
 		x = SCREEN_WIDTH / 2,
 		y = SCREEN_HEIGHT /2
@@ -45,13 +48,15 @@ def main():
 		pygame.display.flip()
 		for asteroid in asteroids:
 			if asteroid.check_collision_with(player):
-				print("Game over!")
-				sys.exit()
+				player.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+				# print("Game over!")
+				# sys.exit()
 		for asteroid in asteroids:
 			for shot in shots:
 				if asteroid.check_collision_with(shot):
 					asteroid.split()
 					shot.kill()
+					score.add_score(1)
 
 		dt = clock.tick(60) / 1000
 

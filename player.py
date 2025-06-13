@@ -8,6 +8,29 @@ class Player(CircleShape):
 		super().__init__(x, y, PLAYER_RADIUS)
 		self.rotation = 0
 		self.__timer = 0
+		self.lives = PLAYER_LIVES
+		self.invincible = False
+
+
+	def update(self, dt):
+		keys = pygame.key.get_pressed()
+
+		if keys[pygame.K_a]:
+			self.rotate(-dt)
+		if keys[pygame.K_d]:
+			self.rotate(dt)
+		if keys[pygame.K_w]:
+			self.move(dt)
+		if keys[pygame.K_s]:
+			self.move(-dt)
+		if keys[pygame.K_SPACE] and self.__timer <= 0:
+			self.shoot()
+			self.__timer = PLAYER_SHOOT_COOLDOWN
+		self.__timer -= dt
+
+
+	def draw(self, screen):
+		pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
 
 	def triangle(self):
@@ -33,22 +56,7 @@ class Player(CircleShape):
 		shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
 
 
-	def draw(self, screen):
-		pygame.draw.polygon(screen, "white", self.triangle(), 2)
-
-
-	def update(self, dt):
-		keys = pygame.key.get_pressed()
-
-		if keys[pygame.K_a]:
-			self.rotate(-dt)
-		if keys[pygame.K_d]:
-			self.rotate(dt)
-		if keys[pygame.K_w]:
-			self.move(dt)
-		if keys[pygame.K_s]:
-			self.move(-dt)
-		if keys[pygame.K_SPACE] and self.__timer <= 0:
-			self.shoot()
-			self.__timer = PLAYER_SHOOT_COOLDOWN
-		self.__timer -= dt
+	def respawn(self):
+		self.lives -= 1
+		self.hit_countown = 3
+		self.invincible = True
