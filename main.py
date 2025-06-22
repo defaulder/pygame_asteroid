@@ -1,65 +1,58 @@
-# this allows us to use code from
-# the open-source pygame library
-# throughout this file
 import pygame
-import sys
 
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from score import Score
 from shot import Shot
-from constants import *
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+
 
 def main():
-	pygame.init()
-	clock = pygame.time.Clock()
-	dt = 0
-	screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.init()
+    clock = pygame.time.Clock()
+    dt = 0
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-	updatable = pygame.sprite.Group()
-	drawable = pygame.sprite.Group()
-	asteroids = pygame.sprite.Group()
-	shots = pygame.sprite.Group()
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
-	Player.containers = (updatable, drawable)
-	AsteroidField.containers = (updatable)
-	Asteroid.containers = (updatable, drawable, asteroids)
-	Shot.containers = (updatable, drawable, shots)
+    Player.containers = (updatable, drawable)
+    AsteroidField.containers = updatable
+    Asteroid.containers = (updatable, drawable, asteroids)
+    Shot.containers = (updatable, drawable, shots)
 
-	field = AsteroidField()
-	score = Score(drawable)
-	player = Player(
-		x = SCREEN_WIDTH / 2,
-		y = SCREEN_HEIGHT /2
-	)
+    field = AsteroidField()
+    score = Score(drawable)
+    player = Player(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT / 2)
 
-	while True:
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				return
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
 
+        screen.fill("black")
+        updatable.update(dt)
 
-		screen.fill("black")
-		updatable.update(dt)
+        for item in drawable:
+            item.draw(screen)
+        pygame.display.flip()
+        for asteroid in asteroids:
+            if asteroid.check_collision_with(player):
+                player.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                # print("Game over!")
+                # sys.exit()
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.check_collision_with(shot):
+                    asteroid.split()
+                    shot.kill()
+                    score.add_score(1)
 
-		for item in drawable:
-			item.draw(screen)
-		pygame.display.flip()
-		for asteroid in asteroids:
-			if asteroid.check_collision_with(player):
-				player.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-				# print("Game over!")
-				# sys.exit()
-		for asteroid in asteroids:
-			for shot in shots:
-				if asteroid.check_collision_with(shot):
-					asteroid.split()
-					shot.kill()
-					score.add_score(1)
-
-		dt = clock.tick(60) / 1000
+        dt = clock.tick(60) / 1000
 
 
 if __name__ == "__main__":
-	main()
+    main()
