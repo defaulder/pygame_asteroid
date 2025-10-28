@@ -1,14 +1,13 @@
 import pygame
 
-from player import Player
-from asteroid import Asteroid
-from asteroidfield import AsteroidField
-from score import Score
-from shot import Shot
+from gameobjects import Player, Asteroid, AsteroidField, Score, Shot
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+
+FPS = 60
 
 
 def main():
+    run = True
     pygame.init()
     clock = pygame.time.Clock()
     dt = 0
@@ -19,39 +18,39 @@ def main():
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
 
-    Player.containers = (updatable, drawable)
-    AsteroidField.containers = updatable
-    Asteroid.containers = (updatable, drawable, asteroids)
-    Shot.containers = (updatable, drawable, shots)
+    Player.containers = [updatable, drawable]
+    AsteroidField.containers = [updatable]
+    Asteroid.containers = [updatable, drawable, asteroids]
+    Shot.containers = [updatable, drawable, shots]
 
     field = AsteroidField()
     score = Score(drawable)
     player = Player(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT / 2)
 
-    while True:
+    while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
 
         screen.fill("black")
-        updatable.update(dt)
+
+        for item in updatable:
+            item.update(dt)
 
         for item in drawable:
             item.draw(screen)
+
         pygame.display.flip()
         for asteroid in asteroids:
             if asteroid.check_collision_with(player):
-                player.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-                # print("Game over!")
-                # sys.exit()
-        for asteroid in asteroids:
+                player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
             for shot in shots:
                 if asteroid.check_collision_with(shot):
                     asteroid.split()
                     shot.kill()
                     score.add_score(1)
 
-        dt = clock.tick(60) / 1000
+        dt = clock.tick(FPS) / 1000
 
 
 if __name__ == "__main__":
