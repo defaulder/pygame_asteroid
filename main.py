@@ -1,3 +1,4 @@
+import asyncio
 import pygame
 
 from gameobjects import Player, Asteroid, AsteroidField, Score, Shot
@@ -5,14 +6,13 @@ from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 FPS = 60
 
+pygame.init()
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-def main():
+async def main():
     run = True
-    pygame.init()
-    clock = pygame.time.Clock()
     dt = 0
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
@@ -51,7 +51,8 @@ def main():
                     score.add_score(1)
 
         dt = clock.tick(FPS) / 1000
+        await asyncio.sleep(0)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
