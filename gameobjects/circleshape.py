@@ -15,7 +15,7 @@ class CircleShape(GameObject):
 
 
     def update(self, dt):
-        pass
+        self.position += self.velocity * dt
 
 
     def draw(self, screen):
@@ -23,5 +23,5 @@ class CircleShape(GameObject):
 
 
     def check_collision_with(self, circleshape):
-        distance = pygame.math.Vector2.distance_to(self.position, circleshape.position)
+        distance = self.position.distance_to(circleshape.position)
         return distance <= (self.radius + circleshape.radius)

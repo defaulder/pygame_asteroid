@@ -57,10 +57,9 @@ class Player(CircleShape):
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y)
-        shot.velocity = pygame.Vector2(0, 1).rotate(
-            self.rotation) * PLAYER_SHOOT_SPEED
+        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
 
     def respawn(self):
         self.lives -= 1
-        self.hit_countown = 3
+        self.hit_countdown = 3
         self.invincible = True

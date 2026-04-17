@@ -8,6 +8,8 @@ from constants import (
     ASTEROID_SPAWN_RATE,
     ASTEROID_MIN_RADIUS,
     ASTEROID_KINDS,
+    ASTEROID_MIN_SPEED,
+    ASTEROID_MAX_SPEED,
 )
 from .asteroid import Asteroid
 from .gameobject import GameObject
@@ -53,7 +55,7 @@ class AsteroidField(GameObject):
 
             # spawn a new asteroid at a random edge
             edge = random.choice(self.edges)
-            speed = random.randint(40, 100)
+            speed = random.randint(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED)
             velocity = edge[0] * speed
             velocity = velocity.rotate(random.randint(-30, 30))
             position = edge[1](random.uniform(0, 1))

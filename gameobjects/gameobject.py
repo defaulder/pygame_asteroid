@@ -16,10 +16,8 @@ class GameObject(pygame.sprite.Sprite):
 
 
     def draw(self, screen):
-        # sub-classes must override
-        pass
-
+        raise NotImplementedError("Subclass must implement draw()")
 
     def update(self, dt):
-        #  sub-classes must override
-        pass
+        raise NotImplementedError("Subclass must implement update()")
+
