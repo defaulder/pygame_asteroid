@@ -16,7 +16,8 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.__timer = 0
-        self.lives = PLAYER_LIVES
+        self.__lives = PLAYER_LIVES
+        self.can_respawn = True
         self.invincible = False
 
     def update(self, dt):
@@ -39,12 +40,13 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
     def triangle(self):
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        up_vector = pygame.Vector2(0, 1).rotate(self.rotation)
         right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
+        up_radius_vector = up_vector * self.radius
         return (
-            self.position + forward * self.radius,
-            self.position - forward * self.radius - right,
-            self.position - forward * self.radius + right
+            self.position + up_vector * self.radius,
+            self.position - up_vector * self.radius - right,
+            self.position - up_vector * self.radius + right
         )
 
 
@@ -52,14 +54,15 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED * dt
 
     def move(self, dt):
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        self.position += forward * PLAYER_SPEED * dt
+        up_vector = pygame.Vector2(0, 1).rotate(self.rotation)
+        self.position += up_vector * PLAYER_SPEED * dt
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y)
         shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
 
     def respawn(self):
-        self.lives -= 1
-        self.hit_countdown = 3
+        if self.__lives < 0:
+            self.can_respawn = False
+        self.__lives -= 1
         self.invincible = True

@@ -43,7 +43,9 @@ async def main():
         pygame.display.flip()
         for asteroid in asteroids:
             if asteroid.check_collision_with(player):
-                player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                if player.can_respawn:
+                    player.respawn()
+                    player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
             for shot in shots:
                 if asteroid.check_collision_with(shot):
                     asteroid.split()
