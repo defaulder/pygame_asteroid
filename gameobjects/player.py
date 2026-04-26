@@ -14,23 +14,22 @@ from constants import (
 class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
-        self.rotation = 0
+        self.direction = pygame.Vector2(0, 1)
         self.__timer = 0
         self.__lives = PLAYER_LIVES
-        self.can_respawn = True
         self.invincible = False
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
-            self.rotate(-dt)
+            self.rotate(-PLAYER_TURN_SPEED * dt)
         if keys[pygame.K_d]:
-            self.rotate(dt)
+            self.rotate(PLAYER_TURN_SPEED * dt)
         if keys[pygame.K_w]:
-            self.move(dt)
+            self.move(PLAYER_SPEED * dt)
         if keys[pygame.K_s]:
-            self.move(-dt)
+            self.move(-PLAYER_SPEED * dt)
         if keys[pygame.K_SPACE] and self.__timer <= 0:
             self.shoot()
             self.__timer = PLAYER_SHOOT_COOLDOWN
@@ -40,29 +39,28 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
     def triangle(self):
-        up_vector = pygame.Vector2(0, 1).rotate(self.rotation)
-        right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
-        up_radius_vector = up_vector * self.radius
+        right = self.direction.rotate(90) * self.radius * 0.65
+        up_radius_vector = self.direction * self.radius
         return (
-            self.position + up_vector * self.radius,
-            self.position - up_vector * self.radius - right,
-            self.position - up_vector * self.radius + right
+            self.position + up_radius_vector,
+            self.position - up_radius_vector + right,
+            self.position - up_radius_vector - right
         )
 
 
-    def rotate(self, dt):
-        self.rotation += PLAYER_TURN_SPEED * dt
+    def rotate(self, degrees):
+        self.direction = self.direction.rotate(degrees)
 
-    def move(self, dt):
-        up_vector = pygame.Vector2(0, 1).rotate(self.rotation)
-        self.position += up_vector * PLAYER_SPEED * dt
+    def move(self, distance):
+        self.position += self.direction * distance
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y)
-        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+        shot.velocity = self.direction * PLAYER_SHOOT_SPEED
 
-    def respawn(self):
-        if self.__lives < 0:
-            self.can_respawn = False
+    def try_respawn(self):
+        if self.__lives <= 0:
+            return False
         self.__lives -= 1
-        self.invincible = True
+        self.invincible = False
+        return True

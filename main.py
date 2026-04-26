@@ -1,7 +1,7 @@
 import asyncio
 import pygame
 
-from gameobjects import Player, Asteroid, AsteroidField, Score, Shot
+from gameobjects import Player, Asteroid, AsteroidField, Score, Shot, Text
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 FPS = 60
@@ -25,7 +25,11 @@ async def main():
 
     field = AsteroidField()
     score = Score(drawable)
+    score.rect = score.rect.move(0, 0)
+    text = Text(drawable)
+    text.rect = score.rect.move(0, score.rect.height)
     player = Player(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT / 2)
+    text.text = f"Lives: {0}"
 
     while run:
         for event in pygame.event.get():
@@ -43,14 +47,15 @@ async def main():
         pygame.display.flip()
         for asteroid in asteroids:
             if asteroid.check_collision_with(player):
-                if player.can_respawn:
-                    player.respawn()
+                if player.try_respawn():
                     player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                else:
+                    player.kill()
             for shot in shots:
                 if asteroid.check_collision_with(shot):
                     asteroid.split()
                     shot.kill()
-                    score.add_score(1)
+                    score.points += 100
 
         dt = clock.tick(FPS) / 1000
         await asyncio.sleep(0)
