@@ -26,10 +26,10 @@ async def main():
     field = AsteroidField()
     score = Score(drawable)
     score.rect = score.rect.move(0, 0)
-    text = Text(drawable)
-    text.rect = score.rect.move(0, score.rect.height)
+    lives = Text(drawable)
+    lives.rect = score.rect.move(0, score.rect.height)
     player = Player(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT / 2)
-    text.text = f"Lives: {0}"
+    lives.text = f"Lives: {player.lives}"
 
     while run:
         for event in pygame.event.get():
@@ -49,6 +49,7 @@ async def main():
             if asteroid.check_collision_with(player):
                 if player.try_respawn():
                     player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                    lives.text = f"Lives: {player.lives}"
                 else:
                     player.kill()
             for shot in shots:

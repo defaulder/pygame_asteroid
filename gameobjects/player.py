@@ -16,7 +16,7 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.direction = pygame.Vector2(0, 1)
         self.__timer = 0
-        self.__lives = PLAYER_LIVES
+        self.lives = PLAYER_LIVES
         self.invincible = False
 
     def update(self, dt):
@@ -59,8 +59,8 @@ class Player(CircleShape):
         shot.velocity = self.direction * PLAYER_SHOOT_SPEED
 
     def try_respawn(self):
-        if self.__lives <= 0:
+        if self.lives <= 0:
             return False
-        self.__lives -= 1
+        self.lives -= 1
         self.invincible = False
         return True
